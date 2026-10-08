@@ -77,9 +77,9 @@ jobs:
         with:
           swift-version: ${{ matrix.swift }}
 
-      # setup-swift has no Windows toolchains for recent releases, so install
-      # the official NSIS installer directly and put swiftc on PATH. The
-      # elevated child process outlives the launcher, hence the polling.
+      # setup-swift has no Windows toolchains for recent releases. The official
+      # installer is a WiX Burn bundle (user scope), so go through winget when
+      # available, or run it with /quiet ourselves, then put swiftc on PATH.
       - name: Cache Swift installer
         if: runner.os == 'Windows'
         uses: actions/cache@v4
@@ -90,27 +90,25 @@ jobs:
       - name: Set up Swift (Windows)
         if: runner.os == 'Windows'
         run: |
-          $installer = "$env:RUNNER_TEMP\swift-install.exe"
-          if (-not (Test-Path $installer)) {
-            Invoke-WebRequest -Uri 'https://download.swift.org/swift-6.2.4-release/windows10/swift-6.2.4-RELEASE/swift-6.2.4-RELEASE-windows10.exe' -OutFile $installer
+          $ErrorActionPreference = 'Stop'
+          $installed = $false
+          if (Get-Command winget -ErrorAction SilentlyContinue) {
+            winget install --id Swift.Toolchain -e --version 6.2.4 --accept-source-agreements --accept-package-agreements --disable-interactivity
+            $installed = $LASTEXITCODE -eq 0
           }
-          $process = Start-Process -FilePath $installer -ArgumentList '/S' -PassThru
-          if (-not $process.WaitForExit(300000)) { $process.Kill(); throw 'Swift installer timed out' }
-          "Installer exit code: $($process.ExitCode)"
-          $bin = $null
-          $deadline = (Get-Date).AddMinutes(5)
-          while (-not $bin -and (Get-Date) -lt $deadline) {
-            Start-Sleep -Seconds 10
-            $bin = Get-ChildItem "$env:SystemDrive\Library" -Recurse -Filter 'swiftc.exe' -ErrorAction SilentlyContinue |
-              Select-Object -First 1 -ExpandProperty DirectoryName
-          }
-          if (-not $bin) {
-            if (Test-Path "$env:SystemDrive\Library") {
-              Get-ChildItem "$env:SystemDrive\Library" -Recurse -Depth 3 -ErrorAction SilentlyContinue |
-                Select-Object -First 40 -ExpandProperty FullName
+          if (-not $installed) {
+            $installer = "$env:RUNNER_TEMP\swift-install.exe"
+            if (-not (Test-Path $installer)) {
+              Invoke-WebRequest -Uri 'https://download.swift.org/swift-6.2.4-release/windows10/swift-6.2.4-RELEASE/swift-6.2.4-RELEASE-windows10.exe' -OutFile $installer
             }
-            throw 'swiftc.exe not found after install'
+            $process = Start-Process -FilePath $installer -ArgumentList '/quiet' -PassThru
+            if (-not $process.WaitForExit(600000)) { $process.Kill(); throw 'Swift installer timed out' }
+            "Installer exit code: $($process.ExitCode)"
           }
+          $roots = @("$env:LOCALAPPDATA\Programs", "$env:LOCALAPPDATA", "$env:ProgramFiles", "$env:SystemDrive\Library")
+          $bin = Get-ChildItem $roots -Recurse -Filter 'swiftc.exe' -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty DirectoryName
+          if (-not $bin) { throw 'swiftc.exe not found after install' }
           Add-Content $env:GITHUB_PATH $bin
 
       # The platform layer must stay Foundation-only so the port effort in
