@@ -83,8 +83,10 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          ls -l dist
-          gh release create "${{ github.ref_name }}" dist/* \
+          mapfile -t files < <(find dist -type f | sort)
+          ls -l "${files[@]}"
+          gh release create "${{ github.ref_name }}" "${files[@]}" \
             --title "Compositor multi-platform ${{ github.ref_name }}" \
             --generate-notes
