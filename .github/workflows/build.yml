@@ -130,6 +130,9 @@ jobs:
       # docs/PORTING.md can compile the core on every OS. Typechecking it
       # here keeps that promise visible on every push. Swift for Windows
       # needs the MSVC developer environment, so import vcvars64 first.
+      # The 6.x Windows toolkit splits the install: tools live under
+      # Toolchains and the standard library may ship with the runtime under
+      # Runtimes, so locate Swift.swiftmodule and point the compiler at it.
       - name: Typecheck platform layer
         shell: pwsh
         run: |
@@ -142,5 +145,29 @@ jobs:
                 [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
               }
             }
+            "swiftc resolves to: $((Get-Command swiftc).Source)"
+            "Target info:"
+            swift -print-target-info
+            $swiftRoot = "$env:LOCALAPPDATA\Programs\Swift"
+            "Toolchain usr\lib\swift:"
+            Get-ChildItem "$swiftRoot\Toolchains\*\usr\lib\swift" -Directory -ErrorAction SilentlyContinue |
+              Select-Object -ExpandProperty FullName
+            "Runtime usr tree:"
+            Get-ChildItem "$swiftRoot\Runtimes\*\usr" -Recurse -Depth 3 -Directory -ErrorAction SilentlyContinue |
+              Select-Object -ExpandProperty FullName
+            $mod = Get-ChildItem $swiftRoot -Recurse -Filter 'Swift.swiftmodule' -Directory -ErrorAction SilentlyContinue |
+              Select-Object -First 1 -ExpandProperty FullName
+            if ($mod) {
+              "Stdlib module found at: $mod"
+              $swiftLib = Split-Path (Split-Path $mod -Parent) -Parent
+              swiftc -typecheck -I $swiftLib Compositor/Platform/Platform.swift
+              if ($LASTEXITCODE -ne 0) {
+                "Retry with explicit resource dir:"
+                swiftc -typecheck -resource-dir $swiftLib -I $swiftLib Compositor/Platform/Platform.swift
+                exit $LASTEXITCODE
+              }
+              exit 0
+            }
+            "Swift.swiftmodule not found under $swiftRoot"
           }
           swiftc -typecheck Compositor/Platform/Platform.swift
