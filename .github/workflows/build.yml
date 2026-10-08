@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  macos-app:
+    name: macOS app (unsigned)
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Resolve Swift packages
+        run: >
+          xcodebuild -resolvePackageDependencies
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -onlyUsePackageVersionsFromResolvedFile
+
+      - name: Build Release
+        run: >
+          xcodebuild build
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=arm64'
+          -configuration Release
+          -derivedDataPath DerivedData
+          CODE_SIGN_IDENTITY=-
+          CODE_SIGNING_REQUIRED=NO
+
+      - name: Package app bundle
+        run: |
+          cd DerivedData/Build/Products/Release
+          ditto -c -k --sequesterRsrc --keepParent Compositor.app Compositor-macOS.zip
+          mv Compositor-macOS.zip "$GITHUB_WORKSPACE"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Compositor-macOS
+          path: Compositor-macOS.zip
+          retention-days: 14
+
+  platform-layer:
+    name: Platform layer on ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-24.04
+          - name: Windows
+            os: windows-2025
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.1"
+
+      # The platform layer must stay Foundation-only so the port effort in
+      # docs/PORTING.md can compile the core on every OS. Typechecking it
+      # here keeps that promise visible on every push.
+      - name: Typecheck platform layer
+        run: swiftc -typecheck Compositor/Platform/Platform.swift
