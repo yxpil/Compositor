@@ -131,6 +131,7 @@ jobs:
       # here keeps that promise visible on every push. Swift for Windows
       # needs the MSVC developer environment, so import vcvars64 first.
       - name: Typecheck platform layer
+        shell: pwsh
         run: |
           if ($env:RUNNER_OS -eq 'Windows') {
             $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
