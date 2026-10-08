@@ -65,18 +65,30 @@ jobs:
             swift: "6.1"
           - name: Windows
             os: windows-2025
-            # swift.org publishes Windows toolchains from 6.2.2 on; 6.1 has none.
-            swift: "6.2.4"
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set up Swift
+      - name: Set up Swift (Linux)
+        if: runner.os == 'Linux'
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ matrix.swift }}
+
+      # setup-swift has no Windows toolchains for recent releases, so install
+      # the official NSIS installer directly and put swiftc on PATH.
+      - name: Set up Swift (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $installer = "$env:RUNNER_TEMP\swift-install.exe"
+          Invoke-WebRequest -Uri 'https://download.swift.org/swift-6.2.4-release/windows10/swift-6.2.4-RELEASE/swift-6.2.4-RELEASE-windows10.exe' -OutFile $installer
+          Start-Process -Wait -FilePath $installer -ArgumentList '/S'
+          $bin = Get-ChildItem "$env:SystemDrive\Library" -Recurse -Filter 'swiftc.exe' -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty DirectoryName
+          if (-not $bin) { throw 'swiftc.exe not found after install' }
+          Add-Content $env:GITHUB_PATH $bin
 
       # The platform layer must stay Foundation-only so the port effort in
       # docs/PORTING.md can compile the core on every OS. Typechecking it
