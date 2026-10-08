@@ -1,0 +1,11 @@
+{
+  "name": "compositor-port",
+  "private": true,
+  "version": "1.4.6",
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

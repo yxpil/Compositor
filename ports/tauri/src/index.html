@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compositor Port</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header id="toolbar">
+    <button id="pickFolder">Open folder…</button>
+    <input id="folderPath" type="text" spellcheck="false" placeholder="Folder containing .comp projects" />
+    <button id="refresh">Refresh</button>
+    <span class="spacer"></span>
+    <button id="exportPng" disabled>Export PNG</button>
+    <button id="save" disabled>Save</button>
+  </header>
+  <main>
+    <aside id="projects">
+      <h2>Projects</h2>
+      <ul id="projectList"></ul>
+    </aside>
+    <section id="canvasArea">
+      <div id="canvasHost"><canvas id="canvas"></canvas></div>
+      <div id="status">Open a folder containing .comp projects to start.</div>
+    </section>
+    <aside id="layersPanel">
+      <h2>Layers</h2>
+      <ul id="layerList"></ul>
+    </aside>
+  </main>
+  <script src="main.js"></script>
+</body>
+</html>

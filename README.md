@@ -79,6 +79,10 @@ brew install --cask robbietilton-compositor
 ### Works with AI agents
 - AI agents and scripts can build and edit projects directly: a `.comp` is a folder of PNG layers and a manifest, and an open project updates live as it's written. See [Writing Compositor projects](docs/writing-comp-files.md)
 
+## Platform support
+
+Compositor is macOS-only today: the UI is SwiftUI and AppKit, and the renderer is Metal. The `multi-platform` branch adds a cross-platform **Tauri 2** port under `ports/tauri` that opens, previews, lightly edits and exports `.comp` projects on Windows and Linux (CI builds NSIS and deb/AppImage bundles). See [docs/PORTING.md](docs/PORTING.md) for the dependency map and roadmap. The `.comp` project format (a folder of PNG layers plus a manifest) is already platform-independent.
+
 ## Requirements
 
 - macOS 26.0 or later on a Mac with Apple silicon
