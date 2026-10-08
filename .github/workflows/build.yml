@@ -109,7 +109,18 @@ jobs:
           $bin = Get-ChildItem $roots -Recurse -Filter 'swiftc.exe' -ErrorAction SilentlyContinue |
             Select-Object -First 1 -ExpandProperty DirectoryName
           if (-not $bin) { throw 'swiftc.exe not found after install' }
+          "Toolchain bin: $bin"
+          # The driver needs the bundled runtime DLLs on PATH too.
+          $runtimes = @(
+            (Join-Path $bin 'lib\swift\windows'),
+            (Join-Path (Split-Path $bin) 'lib\swift\windows')
+          ) | Where-Object { Test-Path $_ }
+          foreach ($runtime in $runtimes) { "Runtime: $runtime" }
+          $env:PATH = "$bin$( [IO.Path]::PathSeparator )$($runtimes -join [IO.Path]::PathSeparator );$env:PATH"
+          & "$bin\swiftc.exe" --version
+          "swiftc --version exit: $LASTEXITCODE"
           Add-Content $env:GITHUB_PATH $bin
+          foreach ($runtime in $runtimes) { Add-Content $env:GITHUB_PATH $runtime }
 
       # The platform layer must stay Foundation-only so the port effort in
       # docs/PORTING.md can compile the core on every OS. Typechecking it
