@@ -110,12 +110,15 @@ jobs:
             Select-Object -First 1 -ExpandProperty DirectoryName
           if (-not $bin) { throw 'swiftc.exe not found after install' }
           "Toolchain bin: $bin"
-          # The driver needs the bundled runtime DLLs on PATH too; find them
-          # wherever the toolkit layout puts them.
-          $toolchain = (Get-Item $bin).Parent.Parent.FullName
-          "Toolchain root: $toolchain"
-          $dirs = @(Get-ChildItem $toolchain -Recurse -Include 'swiftCore.dll', 'icuin.dll' -ErrorAction SilentlyContinue |
+          # The developer toolkit ships tools only; the runtime is installed
+          # alongside it, so find the DLL directories by name.
+          $dirs = @(Get-ChildItem $env:LOCALAPPDATA -Recurse -Include 'swiftCore.dll', 'icuin.dll' -ErrorAction SilentlyContinue |
             Select-Object -ExpandProperty DirectoryName -Unique)
+          if (-not $dirs) {
+            Get-ChildItem "$env:LOCALAPPDATA\Programs\Swift" -Directory -Recurse -Depth 2 -ErrorAction SilentlyContinue |
+              Select-Object -First 30 -ExpandProperty FullName
+            throw 'Swift runtime DLLs not found'
+          }
           foreach ($dir in $dirs) { "Runtime dir: $dir" }
           $env:PATH = (@(@($bin) + $dirs) -join ';') + ';' + $env:PATH
           & "$bin\swiftc.exe" --version
