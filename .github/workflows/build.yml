@@ -62,8 +62,11 @@ jobs:
         include:
           - name: Linux
             os: ubuntu-24.04
+            swift: "6.1"
           - name: Windows
             os: windows-2025
+            # swift.org publishes Windows toolchains from 6.2.2 on; 6.1 has none.
+            swift: "6.2.4"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -73,7 +76,7 @@ jobs:
       - name: Set up Swift
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "6.1"
+          swift-version: ${{ matrix.swift }}
 
       # The platform layer must stay Foundation-only so the port effort in
       # docs/PORTING.md can compile the core on every OS. Typechecking it
