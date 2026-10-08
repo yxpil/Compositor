@@ -81,7 +81,7 @@ brew install --cask robbietilton-compositor
 
 ## Platform support
 
-Compositor is macOS-only today: the UI is SwiftUI and AppKit, and the renderer is Metal. The `multi-platform` branch adds a cross-platform **Tauri 2** port under `ports/tauri` that opens, previews, lightly edits and exports `.comp` projects on Windows and Linux (CI builds NSIS and deb/AppImage bundles). See [docs/PORTING.md](docs/PORTING.md) for the dependency map and roadmap. The `.comp` project format (a folder of PNG layers plus a manifest) is already platform-independent.
+Compositor is macOS-only today: the UI is SwiftUI and AppKit, and the renderer is Metal. The `multi-platform` branch adds a cross-platform **Tauri 2** port under `ports/tauri` that opens, previews, lightly edits and exports `.comp` projects on Windows, Linux and macOS (CI builds NSIS, deb/AppImage and dmg installers; pushing a `v*` tag publishes them all to a GitHub release). See [docs/PORTING.md](docs/PORTING.md) for the dependency map and roadmap. The `.comp` project format (a folder of PNG layers plus a manifest) is already platform-independent.
 
 ## Requirements
 
