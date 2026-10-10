@@ -3,7 +3,11 @@
   "private": true,
   "version": "1.4.6",
   "description": "Electron shell for the Compositor port: the shared JS frontend with a Node backend mirroring the Tauri port's Rust commands.",
-  "author": "yxpil",
+  "author": {
+    "name": "yxpil",
+    "email": "yxpil@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/yxpil/Compositor",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
