@@ -198,9 +198,9 @@ export function adoptAsset(file, canvas) {
 // the swap in the open edit so undo/redo can walk it back. Consecutive replacements
 // of one file in a single edit coalesce — the pair keeps the state at edit start.
 export function replaceAsset(file, newCanvas) {
-  if (!session.doc || !file) return file;
+  if (!session.doc || !file) return newCanvas;
   const before = session.doc.images.get(file);
-  if (before === newCanvas) return file;
+  if (before === newCanvas) return newCanvas;
   if (session.pendingEdit) {
     const existing = session.pendingEdit.swaps.find((swap) => swap.file === file);
     if (existing) existing.after = newCanvas;
@@ -209,7 +209,7 @@ export function replaceAsset(file, newCanvas) {
   tagAsset(newCanvas);
   session.doc.images.set(file, newCanvas);
   touchAsset(file);
-  return file;
+  return newCanvas;
 }
 
 export function markDirty() {

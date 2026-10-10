@@ -1,4 +1,4 @@
-// End-to-end suite for the Tauri port. Rendering semantics are checked against
+﻿// End-to-end suite for the Tauri port. Rendering semantics are checked against
 // hand-computed compositing values and, for blend modes, against Chromium's own
 // compositor as the oracle. Error paths check the mock backend's exact messages.
 import { test, expect } from "@playwright/test";
@@ -416,7 +416,7 @@ test.describe("menu parity", () => {
     await boot(page, projects, "p-basic");
     await page.click("#menu-file");
     await expect(page.locator("#menu-file .dropdown")).toBeVisible();
-    await expect(page.locator("#menu-file .menu-item")).toHaveCount(8);
+    await expect(page.locator("#menu-file .menu-item")).toHaveCount(10);
     await page.click('#menu-file .menu-item:has-text("Close Project")');
     await expect(page.locator("#status")).toContainText("Closed project");
     await expect(page.locator("#layerList .layer-row")).toHaveCount(0);
@@ -427,7 +427,7 @@ test.describe("menu parity", () => {
     await boot(page, projects, "p-basic");
     await page.keyboard.press("Control+a");
     let selection = await page.evaluate(() => window.__session.selection);
-    expect([selection.x, selection.y, selection.width, selection.height]).toEqual([0, 0, 32, 24]);
+    expect([selection.bounds.x, selection.bounds.y, selection.width, selection.height]).toEqual([0, 0, 32, 24]);
     await page.keyboard.press("Control+d");
     expect(await page.evaluate(() => window.__session.selection)).toBeNull();
     // Inverse without a selection becomes Select All (the macOS behaviour).
@@ -452,6 +452,7 @@ test.describe("menu parity", () => {
     const projects = await fixtureFS(request);
     await boot(page, projects, "p-basic");
     await page.locator("#layerList .layer-row").first().click();
+    await page.keyboard.press("Escape"); // the click may land on the row's blend dropdown
     await page.keyboard.press("Control+a");
     await page.evaluate(() => { window.__session.foregroundColor = { red: 0, green: 0, blue: 1 }; });
     await page.keyboard.press("Alt+Backspace");
@@ -490,9 +491,10 @@ test.describe("menu parity", () => {
     await page.click("#menu-image");
     await page.click('#menu-image .menu-item:has-text("Flip Canvas Horizontal")');
     const image = await snapshot(page);
-    // Pixel x mirrors to 31 − x.
+    // Pixel x mirrors to 31 − x: (23,12) → (8,12) half-green, and the blue
+    // patch at x=24 lands on x=7.
     expectRGBA(px(image, 23, 12), SOLID(128, 128, 0), 3, "mirrored half-green");
-    expectRGBA(px(image, 7, 12), SOLID(255, 0, 0), 3, "mirrored left edge is red");
+    expectRGBA(px(image, 7, 12), SOLID(191, 0, 64), 3, "mirrored blue patch");
   });
 
   test("image size rescales the canvas through its sheet", async ({ page, request }) => {
@@ -514,10 +516,12 @@ test.describe("menu parity", () => {
     const projects = await fixtureFS(request);
     await boot(page, projects, "p-basic");
     await page.locator("#layerList .layer-row").first().click();
+    await page.keyboard.press("Escape"); // the click may land on the row's blend dropdown
     await page.keyboard.press("Control+i");
-    // Top pixel (0,255,0) inverts to (255,0,0); over red at 0.5 → (255,0,0).
+    // Top pixel (0,255,0) inverts straight-RGB to magenta (255,0,255); over red
+    // at 0.5 → (255,0,128).
     let image = await snapshot(page);
-    expectRGBA(px(image, 8, 12), SOLID(255, 0, 0), 3, "inverted green");
+    expectRGBA(px(image, 8, 12), SOLID(255, 0, 128), 3, "inverted green");
     await page.keyboard.press("Control+z");
     image = await snapshot(page);
     expectRGBA(px(image, 8, 12), SOLID(128, 128, 0), 3, "undo restores");

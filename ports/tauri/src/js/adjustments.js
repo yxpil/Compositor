@@ -134,8 +134,8 @@ export function applyGaussianBlur(image, radius, originX = 0, originY = 0) {
     planes[1][p] = data[i + 1] * alpha[p];
     planes[2][p] = data[i + 2] * alpha[p];
   }
-  const blurred = planes.map((plane) => K.gaussianBlurPlane(plane, width, height, Math.max(0.01, radius)));
-  const blurredAlpha = K.gaussianBlurPlane(alpha, width, height, Math.max(0.01, radius));
+  const blurred = planes.map((plane) => K.gaussianBlurPlane(plane, width, height, Math.max(0.01, radius / 2)));
+  const blurredAlpha = K.gaussianBlurPlane(alpha, width, height, Math.max(0.01, radius / 2));
   for (let i = 0, p = 0; i < data.length; i += 4, p += 1) {
     const a = blurredAlpha[p] * 255;
     data[i + 3] = Math.round(a);

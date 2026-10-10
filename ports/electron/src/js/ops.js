@@ -217,6 +217,7 @@ function withLayerPixels(layer, edit) {
 // RGB mixes toward the color, alpha rises to the coverage.
 function fillLayerPixels(layer, color) {
   const coverage = coverageFor(layer);
+  console.log("DBG fillLayerPixels coverage:", coverage ? coverage.length : null, coverage ? coverage.slice(0, 4) : null);
   if (!coverageMeaningful(coverage)) return false;
   return withLayerPixels(layer, (before) => {
     const out = document.createElement("canvas");
@@ -1108,8 +1109,10 @@ export const documentOps = {
   },
 
   fillSelection(kind) {
+    console.log("DBG fillSelection", kind, "active:", session.activeLayerId);
     if (!doc()) return;
     const layer = pixelLayerOf(session.activeLayerId);
+    console.log("DBG fill layer:", layer && layer.name, "sel:", !!session.selection);
     if (!layer) {
       if (session.setStatus) session.setStatus("Fill needs a pixel layer.", true);
       return;
@@ -1117,7 +1120,7 @@ export const documentOps = {
     const color = kind === "Background" ? session.backgroundColor : session.foregroundColor;
     beginEdit(kind === "Background" ? "Fill Background" : "Fill Foreground");
     if (!fillLayerPixels(layer, color)) cancelEdit();
-    else markDirty();
+    else { endEdit(); markDirty(); }
   },
 
   clearSelectedPixels() {
@@ -1129,7 +1132,7 @@ export const documentOps = {
     }
     beginEdit("Clear");
     if (!clearLayerPixels(layer)) cancelEdit();
-    else markDirty();
+    else { endEdit(); markDirty(); }
   },
 
   // Content-Aware Fill over the selection, via the HealPixels.c membrane solve.
@@ -1161,7 +1164,7 @@ export const documentOps = {
       return out;
     });
     if (!done) cancelEdit();
-    else markDirty();
+    else { endEdit(); markDirty(); }
   },
 
   // ---- Image menu: canvas geometry ----
@@ -1410,9 +1413,9 @@ export const documentOps = {
     const layers = manifest().layers;
     const kids = layers.filter((layer) => layer.parentID === group.id);
     beginEdit("Ungroup");
-    const index = layers.indexOf(group);
-    layers.splice(index, 1);
-    layers.splice(index, 0, ...kids);
+    // Flat model: the kids stay in the array where they are (directly under the
+    // group); ungrouping only removes the group and detaches them.
+    layers.splice(layers.indexOf(group), 1);
     for (const kid of kids) kid.parentID = group.parentID;
     endEdit();
     setActiveLayer(kids.length ? kids[0].id : null);
@@ -1847,6 +1850,7 @@ export const documentOps = {
         }
       }
       context.putImageData(image, 0, 0);
+      replaceAsset(file, before);
       endEdit();
       markDirty();
     } catch (error) {

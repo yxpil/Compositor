@@ -17,9 +17,13 @@ const modifier = (event) => (event.ctrlKey || event.metaKey);
 export function installShortcuts() {
   window.addEventListener("keydown", (event) => {
     const target = event.target;
-    if (target instanceof HTMLElement
-      && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT"
-        || target.isContentEditable)) {
+    // Only genuine text entry swallows shortcuts: a focused select/checkbox
+    // must still let ⌘I, ⌥⌫ & co. through, like a desktop app's menu keys.
+    const tag = target instanceof HTMLElement ? target.tagName : "";
+    const type = (target && target.type || "").toLowerCase();
+    const textEntry = tag === "TEXTAREA" || (target && target.isContentEditable)
+      || (tag === "INPUT" && !["checkbox", "radio", "range", "button", "submit", "color"].includes(type));
+    if (textEntry) {
       return;
     }
     if (document.getElementById("paletteOverlay")) {
