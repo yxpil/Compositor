@@ -10,6 +10,18 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:4173",
     viewport: { width: 1280, height: 800 },
+    // CI's SwiftShader-driven Chromium renders canvas with a display color
+    // profile, shifting pixels a few levels off the sRGB values the math
+    // expects; pin everything to sRGB and software paths.
+    launchOptions: {
+      args: [
+        "--force-color-profile=srgb",
+        "--disable-color-correct-rendering",
+        "--disable-lcd-text",
+        "--disable-font-subpixel-positioning",
+        "--disable-skia-runtime-opts",
+      ],
+    },
   },
   webServer: {
     command: "node e2e/server.mjs",
