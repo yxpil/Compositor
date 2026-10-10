@@ -1,0 +1,103 @@
+name: Electron build
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: electron-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  desktop:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows (NSIS + zip)
+            os: windows-2025
+            paths: |
+              ports/electron/dist/*.exe
+              ports/electron/dist/*.zip
+          - name: Linux (AppImage + deb)
+            os: ubuntu-24.04
+            paths: |
+              ports/electron/dist/*.AppImage
+              ports/electron/dist/*.deb
+          - name: macOS (dmg + zip)
+            os: macos-latest
+            paths: |
+              ports/electron/dist/*.dmg
+              ports/electron/dist/*.zip
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ports/electron
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Logic first: the backend port and shared frontend tests run without
+      # packaging, so a failing build is never a test failure in disguise.
+      - name: Unit tests
+        run: npm test
+
+      # CI has no signing identity; skip the macOS codesign probe.
+      - name: Package installers
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run dist
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Compositor-Electron-${{ matrix.os }}
+          path: ${{ matrix.paths }}
+          retention-days: 14
+          if-no-files-found: error
+
+  # Push a v* tag to collect every installer from the matrix above into one
+  # GitHub release. The Tauri workflow publishes to the same tag; its job
+  # creates the release, this one attaches if the release already exists.
+  release:
+    name: Attach installers to release
+    needs: [desktop]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mapfile -t files < <(find dist -type f | sort)
+          ls -l "${files[@]}"
+          if gh release view "${{ github.ref_name }}" > /dev/null 2>&1; then
+            gh release upload "${{ github.ref_name }}" "${files[@]}" --clobber
+          else
+            gh release create "${{ github.ref_name }}" "${files[@]}" \
+              --title "Compositor multi-platform ${{ github.ref_name }}" \
+              --generate-notes
+          fi

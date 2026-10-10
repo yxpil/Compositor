@@ -1,0 +1,99 @@
+{
+  "format": "com.compositor.project",
+  "version": 11,
+  "colorSpace": "sRGB",
+  "width": 32,
+  "height": 24,
+  "activeLayerID": "11111111-1111-1111-1111-000000000050",
+  "layers": [
+    {
+      "id": "11111111-1111-1111-1111-000000000048",
+      "name": "Rectangle",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "rect.png",
+      "shape": {
+        "kind": "Rectangle",
+        "red": 1,
+        "green": 0,
+        "blue": 0,
+        "cornerRadius": 4
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000049",
+      "name": "Line",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "line.png",
+      "shape": {
+        "kind": "Line",
+        "red": 0,
+        "green": 0,
+        "blue": 1,
+        "cornerRadius": 0,
+        "lineWidth": 3,
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000050",
+      "name": "Live Shape",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 8,
+          "y": 6
+        },
+        "size": {
+          "width": 12,
+          "height": 10
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "shape": {
+        "kind": "Ellipse",
+        "red": 0,
+        "green": 1,
+        "blue": 0,
+        "cornerRadius": 0
+      }
+    }
+  ]
+}

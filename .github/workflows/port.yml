@@ -1,0 +1,96 @@
+name: Port tests
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: port-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Browser E2E against the mock IPC: the full editor surface (rendering
+  # semantics, editing operations, save/export/import) runs headless Chromium,
+  # the engine class behind WebView2 and WKWebView.
+  e2e:
+    name: e2e (playwright)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: ports/tauri
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ports/tauri/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Unit and E2E tests
+        run: npm test
+
+  # The Electron port: backend unit tests (format validation, export metadata)
+  # plus the shared frontend unit tests, all under node:test — no Electron
+  # download needed for the logic itself.
+  electron:
+    name: electron (node:test)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ports/electron
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit tests
+        run: node --test e2e/unit/adjustments.test.mjs e2e/unit/backend.test.mjs e2e/unit/dither.test.mjs e2e/unit/heal.test.mjs e2e/unit/psd.test.mjs
+
+  # The Rust backend's own unit tests (format validation, export metadata).
+  rust:
+    name: rust (cargo test)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ports/tauri/src-tauri
+
+      # Tauri's Linux build needs the WebKitGTK/GTK development libraries even
+      # for `cargo test` on the tauri crate.
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Cargo test
+        working-directory: ports/tauri/src-tauri
+        run: cargo test

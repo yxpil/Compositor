@@ -1,0 +1,162 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  macos-app:
+    name: macOS app (unsigned)
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Resolve Swift packages
+        run: >
+          xcodebuild -resolvePackageDependencies
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -onlyUsePackageVersionsFromResolvedFile
+
+      - name: Build Release
+        run: >
+          xcodebuild build
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=arm64'
+          -configuration Release
+          -derivedDataPath DerivedData
+          CODE_SIGN_IDENTITY=-
+          CODE_SIGNING_REQUIRED=NO
+
+      - name: Package app bundle
+        run: |
+          cd DerivedData/Build/Products/Release
+          ditto -c -k --sequesterRsrc --keepParent Compositor.app Compositor-macOS.zip
+          mv Compositor-macOS.zip "$GITHUB_WORKSPACE"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Compositor-macOS
+          path: Compositor-macOS.zip
+          retention-days: 14
+
+  platform-layer:
+    name: Platform layer on ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-24.04
+            swift: "6.1"
+          - name: Windows
+            os: windows-2025
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Swift (Linux)
+        if: runner.os == 'Linux'
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      # setup-swift has no Windows toolchains for recent releases. The official
+      # installer is a WiX Burn bundle (user scope), so go through winget when
+      # available, or run it with /quiet ourselves, then put swiftc on PATH.
+      - name: Cache Swift installer
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\swift-install.exe
+          key: swift-6.2.4-windows10-x64
+
+      - name: Set up Swift (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installed = $false
+          if (Get-Command winget -ErrorAction SilentlyContinue) {
+            winget install --id Swift.Toolchain -e --version 6.2.4 --accept-source-agreements --accept-package-agreements --disable-interactivity
+            $installed = $LASTEXITCODE -eq 0
+          }
+          if (-not $installed) {
+            $installer = "$env:RUNNER_TEMP\swift-install.exe"
+            if (-not (Test-Path $installer)) {
+              Invoke-WebRequest -Uri 'https://download.swift.org/swift-6.2.4-release/windows10/swift-6.2.4-RELEASE/swift-6.2.4-RELEASE-windows10.exe' -OutFile $installer
+            }
+            $process = Start-Process -FilePath $installer -ArgumentList '/quiet' -PassThru
+            if (-not $process.WaitForExit(600000)) { $process.Kill(); throw 'Swift installer timed out' }
+            "Installer exit code: $($process.ExitCode)"
+          }
+          $roots = @("$env:LOCALAPPDATA\Programs", "$env:LOCALAPPDATA", "$env:ProgramFiles", "$env:SystemDrive\Library")
+          $bin = Get-ChildItem $roots -Recurse -Filter 'swiftc.exe' -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty DirectoryName
+          if (-not $bin) { throw 'swiftc.exe not found after install' }
+          "Toolchain bin: $bin"
+          # The developer toolkit ships tools only; the runtime is installed
+          # alongside it, so find the DLL directories by name.
+          $dirs = @(Get-ChildItem $env:LOCALAPPDATA -Recurse -Include 'swiftCore.dll', 'icuin.dll' -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty DirectoryName -Unique)
+          if (-not $dirs) {
+            Get-ChildItem "$env:LOCALAPPDATA\Programs\Swift" -Directory -Recurse -Depth 2 -ErrorAction SilentlyContinue |
+              Select-Object -First 30 -ExpandProperty FullName
+            throw 'Swift runtime DLLs not found'
+          }
+          foreach ($dir in $dirs) { "Runtime dir: $dir" }
+          $env:PATH = (@(@($bin) + $dirs) -join ';') + ';' + $env:PATH
+          & "$bin\swiftc.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw "swiftc --version failed with $LASTEXITCODE" }
+          Add-Content $env:GITHUB_PATH $bin
+          foreach ($dir in $dirs) { Add-Content $env:GITHUB_PATH $dir }
+
+      # The platform layer must stay Foundation-only so the port effort in
+      # docs/PORTING.md can compile the core on every OS. Typechecking it
+      # here keeps that promise visible on every push. Swift for Windows
+      # needs the MSVC developer environment, so import vcvars64 first.
+      # The 6.x toolkit installs the compiler under Toolchains but the
+      # standard library inside a platform SDK under Platforms, so the
+      # compiler must be pointed at Windows.sdk explicitly.
+      - name: Typecheck platform layer
+        shell: pwsh
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows') {
+            $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            $vs = & $vswhere -latest -property installationPath
+            $vcvars = Join-Path $vs 'VC\Auxiliary\Build\vcvars64.bat'
+            cmd /s /c "`"$vcvars`" >nul 2>&1 && set" | ForEach-Object {
+              if ($_ -match '^([^=]+)=(.*)$') {
+                [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
+              }
+            }
+            $swiftRoot = "$env:LOCALAPPDATA\Programs\Swift"
+            $sdk = Get-ChildItem "$swiftRoot\Platforms\*\Windows.platform\Developer\SDKs\Windows.sdk" -Directory -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+            if (-not $sdk) { throw "Windows.platform SDK not found under $swiftRoot\Platforms" }
+            "Using SDK: $($sdk.FullName)"
+            $env:SDKROOT = $sdk.FullName
+            swiftc -typecheck -sdk $sdk.FullName Compositor/Platform/Platform.swift
+            if ($LASTEXITCODE -ne 0) {
+              "Retry with explicit import path:"
+              swiftc -typecheck -sdk $sdk.FullName -I (Join-Path $sdk.FullName 'usr\lib\swift') Compositor/Platform/Platform.swift
+              exit $LASTEXITCODE
+            }
+            exit 0
+          }
+          swiftc -typecheck Compositor/Platform/Platform.swift

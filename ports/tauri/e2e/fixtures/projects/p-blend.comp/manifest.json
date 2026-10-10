@@ -1,0 +1,198 @@
+{
+  "format": "com.compositor.project",
+  "version": 11,
+  "colorSpace": "sRGB",
+  "width": 32,
+  "height": 24,
+  "activeLayerID": "11111111-1111-1111-1111-000000000018",
+  "layers": [
+    {
+      "id": "11111111-1111-1111-1111-000000000010",
+      "name": "BG",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "bg.png"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000011",
+      "name": "Multiply",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 2,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend0.png",
+      "blendMode": "Multiply"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000012",
+      "name": "Screen",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 3,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend1.png",
+      "blendMode": "Screen"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000013",
+      "name": "Overlay",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 4,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend2.png",
+      "blendMode": "Overlay"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000014",
+      "name": "Darken",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 5,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend3.png",
+      "blendMode": "Darken"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000015",
+      "name": "Lighten",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 6,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend4.png",
+      "blendMode": "Lighten"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000016",
+      "name": "Difference",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 7,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend5.png",
+      "blendMode": "Difference"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000017",
+      "name": "Color Dodge",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 8,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend6.png",
+      "blendMode": "Color Dodge"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000018",
+      "name": "Color Burn",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 9,
+          "y": 1
+        },
+        "size": {
+          "width": 16,
+          "height": 12
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "blend7.png",
+      "blendMode": "Color Burn"
+    }
+  ]
+}

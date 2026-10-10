@@ -1,0 +1,433 @@
+{
+  "format": "com.compositor.project",
+  "version": 11,
+  "colorSpace": "sRGB",
+  "width": 32,
+  "height": 24,
+  "activeLayerID": "11111111-1111-1111-1111-000000000040",
+  "layers": [
+    {
+      "id": "11111111-1111-1111-1111-000000000028",
+      "name": "Photo",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "photo.png"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000029",
+      "name": "Invert",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Invert"
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000030",
+      "name": "Levels",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Levels",
+        "levels": {
+          "channel": "RGB",
+          "ranges": [
+            {
+              "black": 32,
+              "gamma": 1.2,
+              "white": 224,
+              "outputBlack": 16,
+              "outputWhite": 240
+            },
+            {
+              "black": 0,
+              "gamma": 1,
+              "white": 255,
+              "outputBlack": 0,
+              "outputWhite": 255
+            },
+            {
+              "black": 0,
+              "gamma": 1,
+              "white": 255,
+              "outputBlack": 0,
+              "outputWhite": 255
+            },
+            {
+              "black": 0,
+              "gamma": 1,
+              "white": 255,
+              "outputBlack": 0,
+              "outputWhite": 255
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000031",
+      "name": "Exposure",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Exposure",
+        "exposureSettings": {
+          "exposure": 0.5,
+          "offset": 0.05,
+          "gamma": 1.1
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000032",
+      "name": "Gradient Map",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Gradient Map",
+        "gradientMapSettings": {
+          "shadows": {
+            "red": 0.1,
+            "green": 0,
+            "blue": 0.3
+          },
+          "highlights": {
+            "red": 1,
+            "green": 0.9,
+            "blue": 0.4
+          },
+          "reversed": false
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000033",
+      "name": "Black & White",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Black & White",
+        "blackWhiteSettings": {
+          "reds": 40,
+          "yellows": 60,
+          "greens": 40,
+          "cyans": 60,
+          "blues": 20,
+          "magentas": 80,
+          "tint": true,
+          "tintHue": 40,
+          "tintSaturation": 20
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000034",
+      "name": "Color Balance",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Color Balance",
+        "colorBalanceSettings": {
+          "shadowCyanRed": -30,
+          "shadowMagentaGreen": 10,
+          "shadowYellowBlue": 20,
+          "midCyanRed": 0,
+          "midMagentaGreen": 0,
+          "midYellowBlue": 0,
+          "highlightCyanRed": 20,
+          "highlightMagentaGreen": 0,
+          "highlightYellowBlue": -20,
+          "preserveLuminosity": true
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000035",
+      "name": "Gaussian Blur",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Gaussian Blur",
+        "blurRadius": 2.5
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000036",
+      "name": "Motion Blur",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Motion Blur",
+        "motionAngle": 30,
+        "motionDistance": 5
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000037",
+      "name": "Add Noise",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Add Noise",
+        "noiseAmount": 40,
+        "noiseGaussian": true,
+        "noiseMonochromatic": true,
+        "noiseSeed": 42
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000038",
+      "name": "Grain",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Grain",
+        "grainSettings": {
+          "amount": 60,
+          "size": 2,
+          "roughness": 30,
+          "seed": 7
+        }
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000039",
+      "name": "Hue/Saturation",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Hue/Saturation",
+        "hue": 90,
+        "saturation": 40,
+        "lightness": 10
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000040",
+      "name": "Curves",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "adjustment": {
+        "kind": "Curves",
+        "curves": {
+          "channel": "RGB",
+          "channels": [
+            [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 128,
+                "y": 90
+              },
+              {
+                "x": 255,
+                "y": 255
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 255,
+                "y": 255
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 255,
+                "y": 255
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 255,
+                "y": 255
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

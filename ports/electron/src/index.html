@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compositor Port</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header id="menubar">
+    <div class="menu" id="menu-file">File</div>
+    <div class="menu" id="menu-edit">Edit</div>
+    <div class="menu" id="menu-select">Select</div>
+    <div class="menu" id="menu-image">Image</div>
+    <div class="menu" id="menu-layer">Layer</div>
+    <div class="menu" id="menu-filter">Filter</div>
+    <div class="menu" id="menu-view">View</div>
+    <div class="menu" id="menu-help">Help</div>
+  </header>
+  <header id="toolbar">
+    <button id="pickFolder">Open folder…</button>
+    <input id="folderPath" type="text" spellcheck="false" placeholder="Folder containing .comp projects" />
+    <button id="refresh">Refresh</button>
+    <button id="newProject" title="New project">New</button>
+    <button id="importImages" title="Place image">Import…</button>
+    <span class="spacer"></span>
+    <button id="undo" disabled>Undo</button>
+    <button id="redo" disabled>Redo</button>
+    <button id="commandPalette" title="Command palette (⌘K / Ctrl+K)">Commands</button>
+    <button id="exportPng" disabled>Export PNG</button>
+    <button id="exportJpeg" disabled>Export JPEG</button>
+    <button id="save" disabled>Save</button>
+  </header>
+  <div id="toolOptions"></div>
+  <main>
+    <aside id="projects">
+      <h2>Projects</h2>
+      <ul id="projectList"></ul>
+    </aside>
+    <section id="canvasArea">
+      <div id="canvasHost"><canvas id="canvas"></canvas></div>
+      <div id="status">Open a folder containing .comp projects to start.</div>
+    </section>
+    <aside id="layersPanel">
+      <h2>Layers</h2>
+      <div id="layerActions">
+        <button id="addLayer" title="New layer">+</button>
+        <button id="addGroup" title="New group">▣</button>
+        <button id="duplicateLayer" title="Duplicate">⧉</button>
+        <button id="deleteLayer" title="Delete">🗑</button>
+        <button id="mergeDown" title="Merge down">⤓</button>
+        <button id="addMask" title="Add mask">◷</button>
+      </div>
+      <ul id="layerList"></ul>
+    </aside>
+  </main>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

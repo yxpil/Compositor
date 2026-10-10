@@ -1,0 +1,54 @@
+{
+  "name": "compositor-port-electron",
+  "private": true,
+  "version": "1.4.6",
+  "description": "Electron shell for the Compositor port: the shared JS frontend with a Node backend mirroring the Tauri port's Rust commands.",
+  "author": "yxpil",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "smoke": "node smoke.mjs",
+    "test:unit": "node --test e2e/unit/adjustments.test.mjs e2e/unit/backend.test.mjs e2e/unit/dither.test.mjs e2e/unit/heal.test.mjs e2e/unit/psd.test.mjs",
+    "test": "npm run test:unit",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.yxpil.compositor",
+    "productName": "Compositor",
+    "files": [
+      "main.cjs",
+      "backend.cjs",
+      "preload.cjs",
+      "package.json",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.graphics-design"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Graphics"
+    }
+  }
+}

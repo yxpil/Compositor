@@ -1,0 +1,17 @@
+{
+  "name": "compositor-port",
+  "private": true,
+  "version": "1.4.6",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "gen:fixtures": "node e2e/fixtures/gen.mjs",
+    "test:unit": "node --test e2e/unit/adjustments.test.mjs",
+    "e2e": "playwright test",
+    "test": "npm run test:unit && npm run e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@tauri-apps/cli": "^2"
+  }
+}

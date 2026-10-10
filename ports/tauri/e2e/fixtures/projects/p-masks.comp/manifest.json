@@ -1,0 +1,132 @@
+{
+  "format": "com.compositor.project",
+  "version": 11,
+  "colorSpace": "sRGB",
+  "width": 32,
+  "height": 24,
+  "activeLayerID": "11111111-1111-1111-1111-000000000022",
+  "layers": [
+    {
+      "id": "11111111-1111-1111-1111-000000000019",
+      "name": "Masked",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "img.png",
+      "maskFile": "img.mask.png",
+      "maskEnabled": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000020",
+      "name": "MaskOff",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "img2.png",
+      "maskFile": "img2.mask.png",
+      "maskEnabled": false
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000021",
+      "name": "Unlinked",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "img.png",
+      "maskFile": "img2.mask.png",
+      "maskPlacement": {
+        "origin": {
+          "x": 16,
+          "y": 0
+        },
+        "size": {
+          "width": 16,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Nearest"
+      }
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000023",
+      "name": "Inside",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "group.png",
+      "parentID": "11111111-1111-1111-1111-000000000022"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000022",
+      "name": "Masked Folder",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "isGroup": true,
+      "maskFile": "folder.mask.png",
+      "maskEnabled": true
+    }
+  ]
+}

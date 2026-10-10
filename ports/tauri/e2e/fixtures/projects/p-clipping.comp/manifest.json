@@ -1,0 +1,93 @@
+{
+  "format": "com.compositor.project",
+  "version": 11,
+  "colorSpace": "sRGB",
+  "width": 32,
+  "height": 24,
+  "activeLayerID": "11111111-1111-1111-1111-000000000027",
+  "layers": [
+    {
+      "id": "11111111-1111-1111-1111-000000000024",
+      "name": "Base",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "base.png"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000025",
+      "name": "Clip A",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "a.png",
+      "maskSourceID": "11111111-1111-1111-1111-000000000024"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000026",
+      "name": "Clip B",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "b.png",
+      "maskSourceID": "11111111-1111-1111-1111-000000000024"
+    },
+    {
+      "id": "11111111-1111-1111-1111-000000000027",
+      "name": "Chain",
+      "isVisible": true,
+      "transform": {
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "width": 32,
+          "height": 24
+        },
+        "rotation": 0,
+        "flipX": false,
+        "flipY": false,
+        "sampling": "Smooth"
+      },
+      "imageFile": "c.png",
+      "maskSourceID": "11111111-1111-1111-1111-000000000025"
+    }
+  ]
+}
